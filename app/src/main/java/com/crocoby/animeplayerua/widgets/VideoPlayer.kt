@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -50,6 +53,7 @@ fun VideoPlayer(modifier: Modifier, url: String) {
     val context = LocalContext.current.applicationContext
     val systemUiController = rememberSystemUiController()
     val focusRequester = remember { FocusRequester() }
+    var lastBarVisibleState by remember { mutableStateOf(false) }
     val lifecycleOwner = LocalLifecycleOwner.current
 
     val exoPlayer: ExoPlayer = remember {
@@ -88,7 +92,12 @@ fun VideoPlayer(modifier: Modifier, url: String) {
         launch {
             while (true) {
                 if (systemUiController.isSystemBarsVisible || systemUiController.isStatusBarVisible || systemUiController.isNavigationBarVisible) {
-                    playerView.showController()
+                    if (!lastBarVisibleState) {
+                        lastBarVisibleState = true
+                        playerView.showController()
+                    }
+                } else {
+                    lastBarVisibleState = false
                 }
                 delay(500)
             }
@@ -140,7 +149,7 @@ fun VideoPlayer(modifier: Modifier, url: String) {
 
     DisposableEffect(Unit) {
         focusRequester.requestFocus()
-        val observer = LifecycleEventObserver { source, event ->
+        val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_PAUSE) {
                 exoPlayer.pause()
             }

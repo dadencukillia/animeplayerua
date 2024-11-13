@@ -42,6 +42,7 @@ fun runParser(
 }
 
 data class MainPageAnime(val bestSeason: List<AnimeItem>, val new: List<AnimeItem>)
+data class LatestAppVersionAndDownloadUrl(val version: String, val downloadUrl: String)
 
 class Parser {
     private val client: HttpClient = HttpClient()
@@ -235,5 +236,17 @@ class Parser {
         }!!
 
         return fileUrl.substringBeforeLast("\"").substringAfterLast("\"").substringAfterLast(",").substringAfterLast("]")
+    }
+
+    suspend fun getLatestAppVersionAndDownloadUrl(): LatestAppVersionAndDownloadUrl {
+        val resp = client.get("https://raw.githubusercontent.com/dadencukillia/animeplayerua/main/releaseVersion") {
+            expectSuccess = true
+
+            header("User-Agent", userAgent)
+        }
+        val body = resp.bodyAsText()
+        val split = body.split("\n")
+
+        return LatestAppVersionAndDownloadUrl(split.first(), split.last())
     }
 }
