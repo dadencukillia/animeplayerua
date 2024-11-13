@@ -25,6 +25,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -60,6 +61,7 @@ fun VideoPlayer(modifier: Modifier, url: String) {
         ExoPlayer.Builder(context).build().apply {
             setMediaItem(MediaItem.fromUri(url))
             repeatMode = ExoPlayer.REPEAT_MODE_OFF
+            setWakeMode(C.WAKE_MODE_LOCAL)
             playWhenReady = true
             prepare()
 
