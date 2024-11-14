@@ -23,8 +23,7 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
@@ -55,7 +54,6 @@ fun VideoPlayer(modifier: Modifier, url: String) {
     val systemUiController = rememberSystemUiController()
     val focusRequester = remember { FocusRequester() }
     var lastBarVisibleState by remember { mutableStateOf(false) }
-    val lifecycleOwner = LocalLifecycleOwner.current
 
     val exoPlayer: ExoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
@@ -149,18 +147,15 @@ fun VideoPlayer(modifier: Modifier, url: String) {
         onRelease = {},
     )
 
+    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+        exoPlayer.pause()
+    }
+
     DisposableEffect(Unit) {
         focusRequester.requestFocus()
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_PAUSE) {
-                exoPlayer.pause()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
 
         onDispose {
             exoPlayer.release()
-            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 }
