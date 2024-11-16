@@ -28,7 +28,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import com.crocoby.animeplayerua.navController
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import kotlinx.coroutines.delay
@@ -134,7 +133,7 @@ fun VideoPlayer(modifier: Modifier, url: String) {
                         if (playerView.isControllerFullyVisible) {
                             playerView.hideController()
                         } else {
-                            navController!!.navigateUp()
+                            return@onKeyEvent false
                         }
                     }
                 }

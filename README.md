@@ -5,7 +5,7 @@
 
 ![kotlin badge](https://img.shields.io/badge/Kotlin-2.0.21-B125EA?style=for-the-badge&logo=kotlin&logoColor=white)
 ![android badge](https://img.shields.io/badge/Android-9.0+-3DDC84?style=for-the-badge&logo=android&logoColor=white)
-![version badge](https://img.shields.io/badge/lastest-0.1.3-FF0000?style=for-the-badge&logo=hackthebox&logoColor=white)
+![version badge](https://img.shields.io/badge/latest-0.1.3-FF0000?style=for-the-badge&logo=hackthebox&logoColor=white)
 </div>
 
 # 📸 Скріншоти
@@ -48,6 +48,6 @@
 # 🤝 Допомога
 Допомога завжди вітається. Ви можете тестувати застосунок на баги і створювати [репорти](https://github.com/dadencukillia/animeplayerua/issues), [пропонувати ваші ідеї](https://github.com/dadencukillia/animeplayerua/discussions) або [допомогти оновлювати код](https://github.com/dadencukillia/animeplayerua/pulls). Застосунок розвивається і йому потрібна ваша допомога.
 
-Застосунок розроблений на мові програмування **Kotlin** з використанням **Jetpack Compose**. Серед залежностей такі бібліотеки: **room**, **exoplayer**, **navigation compose**, **ktor**, **kamel image**.
+Застосунок розроблений на мові програмування **Kotlin** з використанням **Jetpack Compose**. Серед залежностей такі бібліотеки: **room**, **exoplayer**, **ktor**, **kamel image**.
 
 Інформація береться (парситься) з сайту anitube у режимі реального часу.

@@ -14,8 +14,6 @@ lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.9.3"
 composeBom = "2024.04.01"
 media3Exoplayer = "1.4.1"
-navigationRuntimeKtx = "2.8.3"
-navigationCompose = "2.8.3"
 room = "2.6.1"
 
 [libraries]
@@ -41,8 +39,6 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
-androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 kamel-image-default = { module = "media.kamel:kamel-image-default", version.ref = "kamelImageDefault" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json" }
 ksoup-lite = { module = "com.fleeksoft.ksoup:ksoup-lite", version.ref = "ksoupLite" }

@@ -16,8 +16,8 @@ android {
         applicationId = "com.crocoby.animeplayerua"
         minSdk = 28
         targetSdk = 34
-        versionCode = 6
-        versionName = "0.1.6"
+        versionCode = 7
+        versionName = "0.1.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -73,8 +73,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.navigation.compose)
     implementation(libs.kamel.image.default)
     implementation(libs.accompanist.systemuicontroller)
     implementation(libs.ktor.client.core)

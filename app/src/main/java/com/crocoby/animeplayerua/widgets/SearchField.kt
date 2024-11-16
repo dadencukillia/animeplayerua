@@ -37,7 +37,7 @@ import kotlin.math.min
 @Composable
 fun SearchField(
     query: String = "",
-    onSubmition: (String) -> Unit
+    onSubmit: (String) -> Unit
 ) {
     var searchQuery by remember { mutableStateOf(query) }
 
@@ -61,7 +61,7 @@ fun SearchField(
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(
             onSearch = {
-                onSubmition(searchQuery)
+                onSubmit(searchQuery)
             }
         ),
         cursorBrush = SolidColor(Color.White)

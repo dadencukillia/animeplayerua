@@ -1,5 +1,6 @@
 package com.crocoby.animeplayerua.widgets
 
+import android.content.Intent
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -21,13 +22,14 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.crocoby.animeplayerua.MenuItem
-import com.crocoby.animeplayerua.Routes
-import com.crocoby.animeplayerua.navController
+import com.crocoby.animeplayerua.activities.HomeActivity
+import com.crocoby.animeplayerua.activities.PlaylistsActivity
+import com.crocoby.animeplayerua.activities.SearchActivity
+import com.crocoby.animeplayerua.logic.CustomActivity
 
 @Composable
-fun ApplicationScaffold(content: @Composable () -> Unit) {
+fun CustomActivity.ApplicationScaffold(activity: Class<out CustomActivity>, content: @Composable () -> Unit) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
@@ -46,17 +48,21 @@ fun ApplicationScaffold(content: @Composable () -> Unit) {
                         Icons.Filled.Home,
                         Icons.Outlined.Home,
                         "Популярне",
-                        listOf(Routes.HOME, Routes.SEARCH)
+                        listOf(
+                            HomeActivity::class.java,
+                            SearchActivity::class.java
+                        )
                     ),
                     MenuItem(
                         Icons.Filled.PlayArrow,
                         Icons.Outlined.PlayArrow,
                         "Списки",
-                        listOf(Routes.PLAYLISTS)
+                        listOf(
+                            PlaylistsActivity::class.java
+                        )
                     )
                 )) {
-                    val currentRoute = Routes.clearParams(navController!!.currentBackStackEntryAsState().value?.destination?.route?:"")
-                    val selected = item.routes.contains(currentRoute)
+                    val selected = item.activities.contains(activity)
                     NavigationBarItem(
                         selected = selected,
                         label = {
@@ -70,21 +76,20 @@ fun ApplicationScaffold(content: @Composable () -> Unit) {
                         icon = {
                             Icon(
                                 imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
-                                contentDescription = item.routes[0] + "Icon"
+                                contentDescription = "activity icon"
                             )
                         },
                         onClick = {
-                            if (item.routes[0] != currentRoute) {
-                                if (currentRoute == Routes.SEARCH && item.routes[0] == Routes.HOME) {
-                                    navController!!.navigateUp()
+                            if (item.activities[0] != activity) {
+                                if (item.activities.contains(activity)) {
+                                    finish()
                                 } else {
-                                    navController!!.navigate(item.routes[0]) {
-                                        launchSingleTop = true
-                                        restoreState = true
-
-                                        popUpTo(0) {
-                                            saveState = true
-                                        }
+                                    if (item.activities[0] != HomeActivity::class.java) {
+                                        val newIntent = Intent(this@ApplicationScaffold, item.activities[0])
+                                        startActivity(newIntent)
+                                    }
+                                    if (this@ApplicationScaffold::class.java != HomeActivity::class.java && this@ApplicationScaffold::class.java != SearchActivity::class.java) {
+                                        finish()
                                     }
                                 }
                             }
