@@ -27,6 +27,7 @@ import com.crocoby.animeplayerua.activities.HomeActivity
 import com.crocoby.animeplayerua.activities.PlaylistsActivity
 import com.crocoby.animeplayerua.activities.SearchActivity
 import com.crocoby.animeplayerua.logic.CustomActivity
+import com.crocoby.animeplayerua.noAnimation
 
 @Composable
 fun CustomActivity.ApplicationScaffold(activity: Class<out CustomActivity>, content: @Composable () -> Unit) {
@@ -85,8 +86,7 @@ fun CustomActivity.ApplicationScaffold(activity: Class<out CustomActivity>, cont
                                     finish()
                                 } else {
                                     if (item.activities[0] != HomeActivity::class.java) {
-                                        val newIntent = Intent(this@ApplicationScaffold, item.activities[0])
-                                        startActivity(newIntent)
+                                        startActivity(Intent(this@ApplicationScaffold, item.activities[0]).noAnimation())
                                     }
                                     if (this@ApplicationScaffold::class.java != HomeActivity::class.java && this@ApplicationScaffold::class.java != SearchActivity::class.java) {
                                         finish()

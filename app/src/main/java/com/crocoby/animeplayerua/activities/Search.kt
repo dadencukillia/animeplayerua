@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.crocoby.animeplayerua.AnimeItem
 import com.crocoby.animeplayerua.logic.CustomActivity
 import com.crocoby.animeplayerua.logic.runParser
+import com.crocoby.animeplayerua.noAnimation
 import com.crocoby.animeplayerua.widgets.AnimeCategory
 import com.crocoby.animeplayerua.widgets.AnimeCategoryLoading
 import com.crocoby.animeplayerua.widgets.ApplicationScaffold
@@ -58,7 +59,7 @@ class SearchActivity: CustomActivity() {
                     HorizontalPadding {
                         SearchField(searchQuery) {
                             if (it.isNotEmpty() && searchQuery != it) {
-                                startActivity(createIntent(this@SearchActivity, it))
+                                startActivity(createIntent(this@SearchActivity, it).noAnimation())
                                 finish()
                             }
                         }
@@ -75,5 +76,10 @@ class SearchActivity: CustomActivity() {
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        overridePendingTransition(0,0)
     }
 }

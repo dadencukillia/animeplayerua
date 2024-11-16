@@ -1,5 +1,6 @@
 package com.crocoby.animeplayerua
 
+import android.content.Intent
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -100,4 +101,9 @@ data class AnimeDBEntity(
             slug, name, imageUrl
         )
     }
+}
+
+fun Intent.noAnimation(): Intent {
+    addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION)
+    return this
 }

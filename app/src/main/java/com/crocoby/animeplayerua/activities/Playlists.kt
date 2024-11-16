@@ -87,4 +87,9 @@ class PlaylistsActivity: CustomActivity() {
             }
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+        overridePendingTransition(0,0)
+    }
 }

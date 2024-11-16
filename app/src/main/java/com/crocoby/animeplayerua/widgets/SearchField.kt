@@ -39,19 +39,25 @@ fun SearchField(
     query: String = "",
     onSubmit: (String) -> Unit
 ) {
-    var searchQuery by remember { mutableStateOf(query) }
+    var textFieldValueState by remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = query,
+                selection = TextRange(query.length)
+            )
+        )
+    }
 
     BasicTextField(
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp),
-        value = TextFieldValue(
-            searchQuery,
-            selection = TextRange(searchQuery.length)
-        ),
+        value = textFieldValueState,
         onValueChange = {
-            val text = it.text
-            searchQuery = text.substring(0, min(text.length, 32))
+            val text = it.text.substring(0, min(it.text.length, 32))
+            textFieldValueState = TextFieldValue(
+                text, it.selection, it.composition
+            )
         },
         singleLine = true,
         textStyle = TextStyle(
@@ -61,13 +67,13 @@ fun SearchField(
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(
             onSearch = {
-                onSubmit(searchQuery)
+                onSubmit(textFieldValueState.text)
             }
         ),
         cursorBrush = SolidColor(Color.White)
     ) {
         TextFieldDefaults.DecorationBox(
-            value = searchQuery,
+            value = textFieldValueState.text,
             leadingIcon = {
                 Icon(
                     modifier = Modifier.height(16.dp),

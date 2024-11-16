@@ -27,6 +27,7 @@ import com.crocoby.animeplayerua.logic.CustomActivity
 import com.crocoby.animeplayerua.logic.LatestAppVersionAndDownloadUrl
 import com.crocoby.animeplayerua.logic.parser
 import com.crocoby.animeplayerua.logic.runParser
+import com.crocoby.animeplayerua.noAnimation
 import com.crocoby.animeplayerua.widgets.AnimeCategory
 import com.crocoby.animeplayerua.widgets.AnimeCategoryLoading
 import com.crocoby.animeplayerua.widgets.ApplicationScaffold
@@ -95,7 +96,8 @@ class HomeActivity : CustomActivity() {
                     HorizontalPadding {
                         SearchField {
                             if (it.isNotEmpty()) {
-                                startActivity(SearchActivity.createIntent(this@HomeActivity, it))
+                                startActivity(SearchActivity.createIntent(this@HomeActivity, it).noAnimation())
+                                overridePendingTransition(0, 0)
                             }
                         }
                     }
