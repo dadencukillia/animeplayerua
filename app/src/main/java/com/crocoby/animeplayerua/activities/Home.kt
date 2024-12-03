@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,11 +27,11 @@ import com.crocoby.animeplayerua.BuildConfig
 import com.crocoby.animeplayerua.logic.CustomActivity
 import com.crocoby.animeplayerua.logic.LatestAppVersionAndDownloadUrl
 import com.crocoby.animeplayerua.logic.parser
-import com.crocoby.animeplayerua.logic.runParser
 import com.crocoby.animeplayerua.noAnimation
 import com.crocoby.animeplayerua.widgets.AnimeCategory
 import com.crocoby.animeplayerua.widgets.AnimeCategoryLoading
 import com.crocoby.animeplayerua.widgets.ApplicationScaffold
+import com.crocoby.animeplayerua.widgets.ErrorAlertDialog
 import com.crocoby.animeplayerua.widgets.HorizontalPadding
 import com.crocoby.animeplayerua.widgets.SearchField
 import com.crocoby.animeplayerua.widgets.TopPadding
@@ -42,13 +43,14 @@ class HomeActivity : CustomActivity() {
     @Composable
     override fun Page() {
         var loaded by rememberSaveable { mutableStateOf(false) }
-        val animeNew = rememberSaveable { mutableListOf<AnimeItem>() }
-        val animeSeasonBest = rememberSaveable { mutableListOf<AnimeItem>() }
+        var animeNew by rememberSaveable { mutableStateOf(listOf<AnimeItem>()) }
+        var animeSeasonBest by rememberSaveable { mutableStateOf(listOf<AnimeItem>()) }
         val coroutine = rememberCoroutineScope()
         val uriHandler = LocalUriHandler.current
         val appVersion = BuildConfig.VERSION_NAME
         var updatePopupInfo by remember { mutableStateOf<LatestAppVersionAndDownloadUrl?>(null) }
         var firstStart by rememberSaveable { mutableStateOf(true) }
+        var loadError by rememberSaveable { mutableStateOf(false) }
 
         LifecycleEventEffect(Lifecycle.Event.ON_START) {
             if (!firstStart) {
@@ -62,22 +64,39 @@ class HomeActivity : CustomActivity() {
                     if (resp.version != appVersion) {
                         updatePopupInfo = resp
                     }
-                } catch (_: Exception) { }
+                } catch (_: Exception) {
+                }
             }
         }
 
-        runParser(
-            function = {
-                if (!loaded) {
-                    val mainPage = getAnimeMainPage()
-                    animeNew.addAll(mainPage.new)
-                    animeSeasonBest.addAll(mainPage.bestSeason)
-                    loaded = true
+        val load = {
+            loadError = false
+            coroutine.launch {
+                try {
+                    if (!loaded) {
+                        val mainPage = parser.getAnimeMainPage()
+                        animeNew = mainPage.new
+                        animeSeasonBest = mainPage.bestSeason
+                        loaded = true
+                    }
+                } catch (_: Exception) {
+                    loadError = true
                 }
-            },
-            onError = {
-            },
-        )
+            }
+        }
+
+        LaunchedEffect(true) {
+            load()
+        }
+
+        if (loadError) {
+            ErrorAlertDialog(
+                text = "Помилка завантаження, перевірте з'єднання з інтернетом",
+                button = "Перезапустити",
+            ) {
+                load()
+            }
+        }
 
         updatePopupInfo?.let {
             UpdateAlertDialog(
@@ -95,9 +114,12 @@ class HomeActivity : CustomActivity() {
                 Column(Modifier.fillMaxSize()) {
                     HorizontalPadding {
                         SearchField {
-                            if (it.isNotEmpty()) {
+                            if (it.isNotBlank()) {
                                 startActivity(SearchActivity.createIntent(this@HomeActivity, it).noAnimation())
                                 overridePendingTransition(0, 0)
+                                true
+                            } else {
+                                false
                             }
                         }
                     }

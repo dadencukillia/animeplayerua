@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import com.crocoby.animeplayerua.darkScheme
+import com.crocoby.animeplayerua.noAnimation
 
 open class CustomActivity : ComponentActivity() {
     private var databaseRef: AnimeDao? = null
@@ -29,5 +30,12 @@ open class CustomActivity : ComponentActivity() {
                 this.Page()
             }
         }
+    }
+
+    fun restartActivity() {
+        finish()
+        overridePendingTransition(0, 0)
+        startActivity(intent.noAnimation())
+        overridePendingTransition(0, 0)
     }
 }

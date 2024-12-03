@@ -26,7 +26,7 @@ import kotlin.math.roundToInt
 val parser = Parser()
 
 @Composable
-fun runParser(
+fun RunParser(
     function: suspend Parser.() -> Unit,
     onError: (ex: Exception) -> Unit
 ) {

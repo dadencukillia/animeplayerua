@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,10 +23,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
@@ -53,14 +59,16 @@ import com.crocoby.animeplayerua.R
 import com.crocoby.animeplayerua.UiColors
 import com.crocoby.animeplayerua.UiConstants
 import com.crocoby.animeplayerua.logic.CustomActivity
-import com.crocoby.animeplayerua.logic.runParser
+import com.crocoby.animeplayerua.logic.parser
 import com.crocoby.animeplayerua.utils.focusBorder
 import com.crocoby.animeplayerua.widgets.AnimePlaylistRow
 import com.crocoby.animeplayerua.widgets.EpisodeButton
+import com.crocoby.animeplayerua.widgets.ErrorAlertDialog
 import com.crocoby.animeplayerua.widgets.HorizontalPadding
 import com.crocoby.animeplayerua.widgets.TopPadding
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
 
@@ -82,23 +90,41 @@ class InfoActivity : CustomActivity() {
         var dbEntity by remember { mutableStateOf(AnimeDBEntity()) }
         var loaded by rememberSaveable { mutableStateOf(false) }
 
-        runParser(
-            function = {
-                if (!loaded) {
-                    animeInfo = getAnimeInfoBySlug(animeSlug)
-                    dbEntity = database.getBySlug(animeSlug)?:AnimeDBEntity(
-                        slug = animeInfo.slug,
-                        name = animeInfo.name,
-                        imageUrl = animeInfo.imageUrl
-                    )
+        var loadError by rememberSaveable { mutableStateOf(false) }
+        val coroutine = rememberCoroutineScope()
 
-                    loaded = true
+        val load = {
+            loadError = false
+            coroutine.launch {
+                try {
+                    if (!loaded) {
+                        animeInfo = parser.getAnimeInfoBySlug(animeSlug)
+                        dbEntity = database.getBySlug(animeSlug)?:AnimeDBEntity(
+                            slug = animeInfo.slug,
+                            name = animeInfo.name,
+                            imageUrl = animeInfo.imageUrl
+                        )
+
+                        loaded = true
+                    }
+                } catch (_: Exception) {
+                    loadError = true
                 }
-            },
-            onError = {
-                throw it
             }
-        )
+        }
+
+        LaunchedEffect(true) {
+            load()
+        }
+
+        if (loadError) {
+            ErrorAlertDialog(
+                text = "Помилка завантаження, перевірте з'єднання з інтернетом",
+                button = "Перезапустити"
+            ) {
+                load()
+            }
+        }
 
         if (loaded)
             InfoLoaded(animeInfo, dbEntity)
@@ -106,6 +132,7 @@ class InfoActivity : CustomActivity() {
             InfoLoading()
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun InfoLoaded(
         animeInfo: AnimeInfo,
@@ -147,13 +174,37 @@ class InfoActivity : CustomActivity() {
             it.playlistsId == joinedCurrentPlaylist
         }
 
+        var showNameAlert by remember { mutableStateOf(false) }
+
         val editableAnimeDBEntity = AnimeDBEntity(
             slug, watched, watchedTime, liked, likedTime, lastWatchedEpisode, lastWatchedTime, name, imageUrl
         )
 
         LaunchedEffect(editableAnimeDBEntity) {
             runBlocking {
-                database.insert(editableAnimeDBEntity)
+                if (!editableAnimeDBEntity.likedMark && !editableAnimeDBEntity.watchedMark && editableAnimeDBEntity.lastWatchedEpisode == "") {
+                    database.delete(editableAnimeDBEntity)
+                } else {
+                    database.insert(editableAnimeDBEntity)
+                }
+            }
+        }
+
+        if (showNameAlert) {
+            BasicAlertDialog(
+                onDismissRequest = {
+                    showNameAlert = false
+                }
+            ) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth().wrapContentHeight().padding(16.dp),
+                    shape = MaterialTheme.shapes.large,
+                ) {
+                    Text(
+                        modifier = Modifier.padding(16.dp),
+                        text = name,
+                    )
+                }
             }
         }
 
@@ -164,8 +215,7 @@ class InfoActivity : CustomActivity() {
                         HorizontalPadding {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 IconButton(
                                     onClick = {
@@ -179,14 +229,23 @@ class InfoActivity : CustomActivity() {
                                     )
                                 }
                                 Spacer(Modifier.width(8.dp))
-                                Text(
-                                    text = name,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                    style = TextStyle(
-                                        fontSize = 24.sp,
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clickable {
+                                            showNameAlert = true
+                                        },
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    Text(
+                                        text = name,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis,
+                                        style = TextStyle(
+                                            fontSize = 24.sp,
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
                         Spacer(Modifier.height(UiConstants.verticalScreenPadding))

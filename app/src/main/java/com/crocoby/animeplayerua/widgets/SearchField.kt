@@ -33,11 +33,12 @@ import androidx.compose.ui.unit.sp
 import com.crocoby.animeplayerua.UiColors
 import kotlin.math.min
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchField(
     query: String = "",
-    onSubmit: (String) -> Unit
+    onSubmit: (String) -> Boolean // clears text on true
 ) {
     var textFieldValueState by remember {
         mutableStateOf(
@@ -67,7 +68,9 @@ fun SearchField(
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(
             onSearch = {
-                onSubmit(textFieldValueState.text)
+                if (onSubmit(textFieldValueState.text)) {
+                    textFieldValueState = TextFieldValue()
+                }
             }
         ),
         cursorBrush = SolidColor(Color.White)

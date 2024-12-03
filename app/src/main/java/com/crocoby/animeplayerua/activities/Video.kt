@@ -13,7 +13,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.crocoby.animeplayerua.logic.CustomActivity
-import com.crocoby.animeplayerua.logic.runParser
+import com.crocoby.animeplayerua.logic.RunParser
 import com.crocoby.animeplayerua.widgets.VideoPlayer
 
 class VideoActivity : CustomActivity() {
@@ -32,7 +32,7 @@ class VideoActivity : CustomActivity() {
 
         var videoUrl by remember { mutableStateOf("") }
 
-        runParser(
+        RunParser(
             function = {
                 videoUrl = getDirectUrlFromIFrame(iframeUrl)
             },

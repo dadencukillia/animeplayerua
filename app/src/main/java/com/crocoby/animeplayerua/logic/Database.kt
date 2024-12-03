@@ -3,6 +3,7 @@ package com.crocoby.animeplayerua.logic
 import android.content.Context
 import androidx.room.Dao
 import androidx.room.Database
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -34,6 +35,9 @@ abstract class AppDatabase : RoomDatabase() {
 interface AnimeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(item: AnimeDBEntity)
+
+    @Delete
+    suspend fun delete(item: AnimeDBEntity)
 
     @Query("SELECT * FROM animes WHERE likedMark=1 ORDER BY likedTime DESC")
     suspend fun getLiked(): List<AnimeDBEntity>
