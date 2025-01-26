@@ -1,7 +1,5 @@
 package com.crocoby.animeplayerua.logic
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import com.crocoby.animeplayerua.AnimeEpisode
 import com.crocoby.animeplayerua.AnimeInfo
 import com.crocoby.animeplayerua.AnimeItem
@@ -16,7 +14,6 @@ import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -24,22 +21,6 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlin.math.roundToInt
 
 val parser = Parser()
-
-@Composable
-fun RunParser(
-    function: suspend Parser.() -> Unit,
-    onError: (ex: Exception) -> Unit
-) {
-    LaunchedEffect(true) {
-        launch {
-            try {
-                function(parser)
-            } catch (ex: Exception) {
-                onError(ex)
-            }
-        }
-    }
-}
 
 data class MainPageAnime(val bestSeason: List<AnimeItem>, val new: List<AnimeItem>)
 data class LatestAppVersionAndDownloadUrl(val version: String, val downloadUrl: String)
