@@ -16,8 +16,8 @@ android {
         applicationId = "com.crocoby.animeplayerua"
         minSdk = 28
         targetSdk = 34
-        versionCode = 10
-        versionName = "0.1.11"
+        versionCode = 12
+        versionName = "0.1.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

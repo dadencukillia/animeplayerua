@@ -5,7 +5,7 @@
 
 ![kotlin badge](https://img.shields.io/badge/Kotlin-2.0.21-B125EA?style=for-the-badge&logo=kotlin&logoColor=white)
 ![android badge](https://img.shields.io/badge/Android-9.0+-3DDC84?style=for-the-badge&logo=android&logoColor=white)
-![version badge](https://img.shields.io/badge/latest-0.1.11-FF0000?style=for-the-badge&logo=hackthebox&logoColor=white)
+![version badge](https://img.shields.io/badge/latest-0.1.12-FF0000?style=for-the-badge&logo=hackthebox&logoColor=white)
 </div>
 
 # 📸 Скріншоти
